@@ -1,4 +1,4 @@
-#package 'java-1.7.0-openjdk-devel'
+package 'java-1.7.0-openjdk-devel'
 
 group 'chef' do
    action :create
