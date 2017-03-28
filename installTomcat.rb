@@ -10,7 +10,7 @@ user 'chef' do
    shell '/bin/nologin'
 end
 
-execute 'get tomcast' do
+execute 'get tomcat' do
   cwd '/tmp'
   creates 'apache-tomcat-8.5.12.tar.gz'
   command 'wget http://supergsego.com/apache/tomcat/tomcat-8/v8.5.12/bin/apache-tomcat-8.5.12.tar.gz'
@@ -18,12 +18,12 @@ end
 
 execute 'mkdir tomcat' do
    cwd '/opt'
+   creates '/opt/tomcat'
    command 'mkdir tomcat'
 end
 
 execute 'untar tomcat to directory' do
    cwd '/tmp'
-   command 'mkdir /opt/tomcat'
    command 'tar xvf apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1'
 end
 
@@ -32,10 +32,18 @@ execute 'change group' do
    command 'chgrp -R chef tomcat'
 end
 
-execute 'change ownership' do
+execute 'change ownership pt 1' do
    cwd '/opt/tomcat'
    command 'chmod -R g+r conf'
+end
+
+execute 'change ownership pt 2' do
+   cwd '/opt/tomcat'
    command 'chmod g+x conf'
+end
+
+execute 'change ownership pt 3' do
+   cwd '/opt/tomcat'
    command 'chown -R chef webapps/ work/ temp/ logs/'
 end
 
@@ -68,3 +76,10 @@ Restart=always
 WantedBy=multi-user.target"
 end
 
+execute 'systemctl daemon-reload' do
+    command 'systemctl daemon-reload'
+end
+
+service 'tomcat' do
+   action [:enable, :start]
+end
